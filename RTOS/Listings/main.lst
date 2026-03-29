@@ -1,0 +1,134 @@
+C51 COMPILER V9.54   MAIN                                                                  03/29/2026 13:05:51 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: E:\51keil_5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\mai
+                    -n.lst) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <REGX52.H>
+   2          #include "Timer.h"
+   3          
+   4          #define MAX_TASKS 2 //表示有两个任务
+   5          #define MAX_TASK_DEP 32//表示栈的深度
+   6          #define guaqi 0         //挂起态
+   7          #define yunxing 1               //运行态
+   8          
+   9          
+  10          
+  11          unsigned char idata task_sp[MAX_TASKS];//任务的堆栈指针（存任务的）
+  12          unsigned char idata task_stack[MAX_TASKS][MAX_TASK_DEP];//每个task任务的堆栈
+  13          unsigned char task_id;//当前任务号
+  14          unsigned int time[2];           //未来时间
+  15          unsigned char zhuangtai[2]={1,1};               //记录LED状态                               
+  16          
+  17          void Delay(unsigned int ms);            
+  18          void task_switch(void);
+  19          void task0(void);
+  20          void task1(void);
+  21          void task_load(unsigned int fn,unsigned char tid);
+  22          
+  23          volatile unsigned int num;
+  24          
+  25          void main()
+  26          {         
+  27   1                Timer0_Init();
+  28   1                task_load(task0,0);
+  29   1                task_load(task1,1);
+  30   1                task_id = 0;
+  31   1                P2_7=0;
+  32   1                P2_0=0;
+  33   1                SP=task_sp[0];
+  34   1                task_switch();
+  35   1      }
+  36          
+  37          
+  38          
+  39          void task_switch()
+  40          {
+  41   1         task_sp[task_id]=SP;
+  42   1              
+  43   1              task_id=task_id+1;
+  44   1              if(task_id==MAX_TASKS)
+  45   1              {
+  46   2                task_id=0;
+  47   2              }
+  48   1              SP=task_sp[task_id];
+  49   1      }
+  50          
+  51          void task0()
+  52          {
+  53   1              
+  54   1        while(1)
+C51 COMPILER V9.54   MAIN                                                                  03/29/2026 13:05:51 PAGE 2   
+
+  55   1              {
+  56   2                      Delay(1000);
+  57   2                      P2_0=~P2_0;
+  58   2                      task_switch();
+  59   2              }
+  60   1      }
+  61          
+  62          void task1()
+  63          {
+  64   1              
+  65   1        while(1)
+  66   1              {
+  67   2                      Delay(500);
+  68   2                      P2_7=~P2_7;
+  69   2                      task_switch();
+  70   2              }
+  71   1      }
+  72                  
+  73          void task_load(unsigned int fn,unsigned char tid)
+  74          {
+  75   1        //task_sp[tid]=  task_stack[tid]+1;//跳到下一个任务
+  76   1              task_stack[tid][1] = (unsigned char)(fn >> 8); 
+  77   1        task_stack[tid][0] = (unsigned char)fn;
+  78   1              task_sp[tid] = (unsigned char)&task_stack[tid][1];
+  79   1      }
+  80          
+  81          
+  82          
+  83          void Timer0_Routine() interrupt 1
+  84          {
+  85   1              TL0=0x18;               
+  86   1              TH0=0xfc;
+  87   1              
+  88   1              num++;
+  89   1      }
+  90          
+  91          void Delay(unsigned int ms)
+  92          {
+  93   1              if(zhuangtai[task_id]==1)               //判断状态
+  94   1                      {
+  95   2                              time[task_id]=num+ms;           //计算延迟结束时间
+  96   2                              zhuangtai[task_id]=0;           //反转状态
+  97   2                      }
+  98   1                      while(zhuangtai[task_id] == 0){         //方便延迟结束是可以不跳回中转函数
+  99   2                      if(num>=time[task_id])          //是否到达延迟结束时间
+ 100   2                              {
+ 101   3                                      zhuangtai[task_id]=1;           //反转状态
+ 102   3                                      break;          //回LED函数                  
+ 103   3                              }
+ 104   2                      task_switch();          //回中转函数
+ 105   2              }
+ 106   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    231    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      9    ----
+   IDATA SIZE       =     66    ----
+   BIT SIZE         =   ----    ----
+C51 COMPILER V9.54   MAIN                                                                  03/29/2026 13:05:51 PAGE 3   
+
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
