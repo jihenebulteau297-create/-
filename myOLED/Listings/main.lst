@@ -1,0 +1,58 @@
+C51 COMPILER V9.54   MAIN                                                                  04/03/2026 11:07:16 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: E:\51keil_5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\mai
+                    -n.lst) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <REGX51.H>                                                             
+   2          #include <oled.h>                                                                       //OLED库函数
+   3          
+   4          #define uchar unsigned char                             //用uchar 表示 unsigned char类型
+   5          #define uint unsigned int                                       //用uint 表示 unsigned int类型
+   6          
+   7          
+   8          extern uchar code BMPclr[];                             //图片清屏用
+   9          extern uchar code BMP0[];                                       //oledfont.h中，图片0取模数组，做外部变量声明（如用到更多图片，均需要声明）
+  10          extern uchar code BMP1[];                                       //oledfont.h中，图片0取模数组，做外部变量声明（如用到更多图片，均需要声明）
+  11          extern uchar code BMP2[];
+  12          extern uchar code BMP3[];
+  13          extern uchar code BMP4[];
+  14          
+  15          
+  16          
+  17          void main(void)
+  18          {       
+  19   1              OLED_Init();                                                                            //初始化OLED  
+  20   1              OLED_Clear();                                                                           //清空屏幕
+  21   1              
+  22   1              while(1) 
+  23   1              {       
+  24   2      //              OLED_DrawBMP_Faster(0,0,76,7,BMP3);
+  25   2      //              OLED_DrawBMP_Faster(0,0,76,7,BMP2);
+  26   2                      BMPmove(93,1,128,4,BMP2,LEFT,1);                //
+  27   2                      BMPmove(93,1,128,4,BMP3,LEFT,1);                //doge向左跑
+  28   2                      BMPmove(93,1,128,4,BMP4,LEFT,1);                //
+  29   2      //              BMPmove(64,1,128,7,BMP2,LEFT,0);
+  30   2                      
+  31   2                      
+  32   2              }
+  33   1      }
+  34          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     98    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
